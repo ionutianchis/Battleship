@@ -1,0 +1,82 @@
+html {
+	height: 100vh;
+	background-color: #181a1b;
+}
+
+body {
+	margin: 0;
+	height: 100%;
+}
+
+#container {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#popupContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	background-color: rgba(24, 26, 27, 0.8)
+}
+
+#popup {
+	background-color: #181a1b;
+	height: 50vh;
+	width: 40vw;
+	max-width: 100%;
+	border: 1px solid white;
+	border-radius: 10px;
+	color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	padding: 50px;
+
+}
+
+#boards {
+	display: flex;
+	flex-direction: row;
+	align-content: center;
+}
+
+#playerBoard {
+	display: grid;
+	width: 400px;
+	height: 400px;
+}
+
+#aiBoard {
+	display: grid;
+	width: 400px;
+	height: 400px;
+	margin: 0 0 0 200px;
+}
+
+.cell {
+	outline: 0.1px solid rgba(199, 198, 198, 0.6);
+	background-color: transparent;
+}
+
+#aiBoard .cell:hover {
+	background-color: tomato;
+}
+
+.hit {
+	background-color: tomato;
+	pointer-events: none;
+}
+
+.hasShip {
+	background-color: rgb(58, 104, 5);
+	pointer-events: none;
+}
