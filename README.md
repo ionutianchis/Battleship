@@ -2,4 +2,4 @@
 
 This is where I first started working with tests through jest
 
-<a href="https://jonthejon10.github.io/Battleship/">Live preview</a>
+<a href="https://jonthejon10.github.io/Battleship/index.html">Live preview</a>
