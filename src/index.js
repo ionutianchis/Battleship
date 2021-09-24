@@ -2,7 +2,6 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-unused-vars */
 import { ship } from './ship-factory'
-import { gameboard } from './gameboard-factory'
 import { player } from './player-factory'
 
 const boards = document.querySelector('#boards')
@@ -12,6 +11,7 @@ const popupContainer = document.querySelector('#popupContainer')
 const popup = document.querySelector('#popup')
 const shipAnnouncement = document.querySelector('#shipTurn')
 
+// creating each grid
 function createGrid (board, size) {
     board.style.gridTemplateColumns = `repeat(${size}, 1fr)`
     board.style.gridTemplateRows = `repeat(${size}, 1fr)`
@@ -22,6 +22,7 @@ function createGrid (board, size) {
     }
 }
 
+// creating ships and gameboards
 const player1 = player('player1')
 player1.gameboard.createBoard(100)
 createGrid(playerBoard, 10)
@@ -45,6 +46,7 @@ createGrid(aiBoard, 10)
 
 const aiCellArr = [...aiBoard.querySelectorAll('.cell')]
 
+// displaying player ships
 function displayShips (board, cellArr) {
     for (const cell of board) {
         if (cell.hasOwnProperty('ship')) {
@@ -59,6 +61,7 @@ function displayShips (board, cellArr) {
     }
 }
 
+// displaying AI attacks
 function displayAiAttacks () {
     for (const cell of player1.gameboard.board) {
         if (cell.hit === true) {
@@ -71,11 +74,11 @@ function displayAiAttacks () {
     }
 }
 
+// turn based attacking
 function attackLogic () {
     for (const cell of aiCellArr) {
         cell.addEventListener('click', () => {
             const index = aiCellArr.indexOf(cell)
-
             if (ai.gameboard.board[index].hasShip) {
                 cell.classList.add('hasShip')
             } else {
@@ -98,6 +101,7 @@ function attackLogic () {
     }
 }
 
+// player placing ships hover
 function hoverShip (cell, ship) {
     let i = 0
     let x = cell.nextElementSibling
@@ -110,6 +114,7 @@ function hoverShip (cell, ship) {
     }
 }
 
+// player ship placement
 function placeShips () {
     const playerAvailableShips = []
     playerAvailableShips.push(carrier, battleship, cruiser, submarine, destroyer)
@@ -165,18 +170,7 @@ function placeShips () {
     }
 }
 
-function checkForShip () {
-    const lastColumn = []
-    lastColumn.push(ai.gameboard.board[9], ai.gameboard.board[19], ai.gameboard.board[29], ai.gameboard.board[39], ai.gameboard.board[49], ai.gameboard.board[59], ai.gameboard.board[69], ai.gameboard.board[79], ai.gameboard.board[89])
-    const firstColumn = []
-    firstColumn.push(ai.gameboard.board[10], ai.gameboard.board[20], ai.gameboard.board[30], ai.gameboard.board[40], ai.gameboard.board[50], ai.gameboard.board[60], ai.gameboard.board[70], ai.gameboard.board[80], ai.gameboard.board[90])
-    for (let i = 0; i < firstColumn.length; i++) {
-        if (firstColumn[i].hasOwnProperty('ship') && lastColumn[i].hasOwnProperty('ship')) {
-            return false
-        }
-    }
-}
-
+// AI placing it's ships random
 function randomlyPlaceAiShips () {
     const aiAvailableShips = []
     aiAvailableShips.push(aiCarrier, aiBattleship, aiCruiser, aiSubmarine, aiDestroyer)
@@ -202,6 +196,19 @@ function randomlyPlaceAiShips () {
     }
 }
 
+// checks for AI ships overflowing to next column
+function checkForShip () {
+    const lastColumn = []
+    lastColumn.push(ai.gameboard.board[9], ai.gameboard.board[19], ai.gameboard.board[29], ai.gameboard.board[39], ai.gameboard.board[49], ai.gameboard.board[59], ai.gameboard.board[69], ai.gameboard.board[79], ai.gameboard.board[89])
+    const firstColumn = []
+    firstColumn.push(ai.gameboard.board[10], ai.gameboard.board[20], ai.gameboard.board[30], ai.gameboard.board[40], ai.gameboard.board[50], ai.gameboard.board[60], ai.gameboard.board[70], ai.gameboard.board[80], ai.gameboard.board[90])
+    for (let i = 0; i < firstColumn.length; i++) {
+        if (firstColumn[i].hasOwnProperty('ship') && lastColumn[i].hasOwnProperty('ship')) {
+            return false
+        }
+    }
+}
+
 function removeShips () {
     for (const cell of ai.gameboard.board) {
         if (cell.hasOwnProperty('ship')) {
@@ -211,6 +218,7 @@ function removeShips () {
     }
 }
 
+// replacing overflowing ships
 function replaceShips () {
     while (checkForShip() === false) {
         removeShips()
@@ -226,5 +234,4 @@ const gameLogic = (() => {
     randomlyPlaceAiShips()
     replaceShips()
     attackLogic()
-    // displayShips(ai.gameboard.board, aiCellArr)
 })()
