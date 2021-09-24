@@ -28,7 +28,7 @@ body {
 }
 
 #popup {
-	background-color: #181a1b;
+	background-color: rgba(19, 42, 53, 0.8);
 	height: 50vh;
 	width: 40vw;
 	max-width: 100%;
@@ -79,4 +79,8 @@ body {
 .hasShip {
 	background-color: rgb(58, 104, 5);
 	pointer-events: none;
+}
+
+.shipHover {
+	background-color: rgb(58, 104, 5);
 }
