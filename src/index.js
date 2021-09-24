@@ -31,8 +31,6 @@ const battleship = ship(4, 'battleship')
 const cruiser = ship(3, 'cruiser')
 const submarine = ship(3, 'submarine')
 const destroyer = ship(2, 'destroyer')
-const playerAvailableShips = []
-playerAvailableShips.push(carrier, battleship, cruiser, submarine, destroyer)
 
 const aiCarrier = ship(5, 'carrier')
 const aiBattleship = ship(4, 'battleship')
@@ -52,6 +50,11 @@ function displayShips (board, cellArr) {
         if (cell.hasOwnProperty('ship')) {
             const index = board.indexOf(cell)
             cellArr[index].classList.add('hasShip')
+        }
+    }
+    for (const square of playerCellArr) {
+        if (square.classList.contains('shipHover')) {
+            square.classList.remove('shipHover')
         }
     }
 }
@@ -82,7 +85,6 @@ function attackLogic () {
 
             ai.aiAttack(player1.gameboard)
             displayAiAttacks()
-            console.log(player1.gameboard)
             if (ai.gameboard.noShips === true) {
                 alert('Game over, you won !')
                 playerBoard.style.pointerEvents = 'none'
@@ -96,16 +98,62 @@ function attackLogic () {
     }
 }
 
+function hoverShip (cell, ship) {
+    let i = 0
+    let x = cell.nextElementSibling
+    // eslint-disable-next-line no-unmodified-loop-condition
+    while (x) {
+        i++
+        if (i === ship.length) break
+        x.classList.toggle('shipHover')
+        x = x.nextElementSibling
+    }
+}
+
 function placeShips () {
+    const playerAvailableShips = []
+    playerAvailableShips.push(carrier, battleship, cruiser, submarine, destroyer)
+
     shipAnnouncement.textContent = `Place your ${playerAvailableShips[0].name}, captain`
+
+    const unplaceable = [9, 19, 29, 39, 49, 59, 69, 79, 89, 99]
+    const carrierUnplaceable = [6, 7, 8, 16, 17, 18, 26, 27, 28, 36, 37, 38, 46, 47, 48, 56, 57, 58, 66, 67, 68, 76, 77, 78, 86, 87, 88, 96, 97, 98]
+    const battleshipUnplaceable = carrierUnplaceable.filter(x => x !== 6 && x !== 16 && x !== 26 && x !== 36 && x !== 46 && x !== 56 && x !== 66 && x !== 76 && x !== 86 && x !== 96)
+    const cruiserUnplaceable = battleshipUnplaceable.filter(x => x !== 7 && x !== 17 && x !== 27 && x !== 37 && x !== 47 && x !== 57 && x !== 67 && x !== 77 && x !== 87 && x !== 97)
+
     for (const playerCell of playerCellArr) {
+        playerCell.addEventListener('mouseover', (e) => {
+            e.target.classList.toggle('shipHover')
+            hoverShip(playerCell, playerAvailableShips[0])
+        })
+        playerCell.addEventListener('mouseleave', (e) => {
+            e.target.classList.toggle('shipHover')
+            hoverShip(playerCell, playerAvailableShips[0])
+        })
         playerCell.addEventListener('click', () => {
-            if (!(playerAvailableShips.length < 1)) {
-                const index = playerCellArr.indexOf(playerCell)
-                player1.gameboard.placeShip(playerAvailableShips[0], index)
-                if (playerAvailableShips[1]) shipAnnouncement.textContent = `Place your ${playerAvailableShips[1].name}, captain`
-                playerAvailableShips.shift()
-                displayShips(player1.gameboard.board, playerCellArr)
+            const index = playerCellArr.indexOf(playerCell)
+            if (!(playerAvailableShips.length < 1) && !(unplaceable.includes(index)) && player1.gameboard.board[index + playerAvailableShips[0].length - 1].hasShip === false) {
+                if (playerAvailableShips[0].name === 'carrier' && !(carrierUnplaceable.includes(index))) {
+                    if (playerAvailableShips[1]) shipAnnouncement.textContent = `Place your ${playerAvailableShips[1].name}, captain`
+                    player1.gameboard.placeShip(playerAvailableShips[0], index)
+                    playerAvailableShips.shift()
+                    displayShips(player1.gameboard.board, playerCellArr)
+                } else if (playerAvailableShips[0].name === 'battleship' && !(battleshipUnplaceable.includes(index))) {
+                    player1.gameboard.placeShip(playerAvailableShips[0], index)
+                    if (playerAvailableShips[1]) shipAnnouncement.textContent = `Place your ${playerAvailableShips[1].name}, captain`
+                    playerAvailableShips.shift()
+                    displayShips(player1.gameboard.board, playerCellArr)
+                } else if ((playerAvailableShips[0].name === 'cruiser' || playerAvailableShips[0].name === 'submarine') && !(cruiserUnplaceable.includes(index))) {
+                    player1.gameboard.placeShip(playerAvailableShips[0], index)
+                    if (playerAvailableShips[1]) shipAnnouncement.textContent = `Place your ${playerAvailableShips[1].name}, captain`
+                    playerAvailableShips.shift()
+                    displayShips(player1.gameboard.board, playerCellArr)
+                } else if (playerAvailableShips[0].name === 'destroyer') {
+                    player1.gameboard.placeShip(playerAvailableShips[0], index)
+                    if (playerAvailableShips[1]) shipAnnouncement.textContent = `Place your ${playerAvailableShips[1].name}, captain`
+                    playerAvailableShips.shift()
+                    displayShips(player1.gameboard.board, playerCellArr)
+                }
             }
             if (playerAvailableShips.length < 1) {
                 popupContainer.style.display = 'none'
@@ -117,6 +165,18 @@ function placeShips () {
     }
 }
 
+function checkForShip () {
+    const lastColumn = []
+    lastColumn.push(ai.gameboard.board[9], ai.gameboard.board[19], ai.gameboard.board[29], ai.gameboard.board[39], ai.gameboard.board[49], ai.gameboard.board[59], ai.gameboard.board[69], ai.gameboard.board[79], ai.gameboard.board[89])
+    const firstColumn = []
+    firstColumn.push(ai.gameboard.board[10], ai.gameboard.board[20], ai.gameboard.board[30], ai.gameboard.board[40], ai.gameboard.board[50], ai.gameboard.board[60], ai.gameboard.board[70], ai.gameboard.board[80], ai.gameboard.board[90])
+    for (let i = 0; i < firstColumn.length; i++) {
+        if (firstColumn[i].hasOwnProperty('ship') && lastColumn[i].hasOwnProperty('ship')) {
+            return false
+        }
+    }
+}
+
 function randomlyPlaceAiShips () {
     const aiAvailableShips = []
     aiAvailableShips.push(aiCarrier, aiBattleship, aiCruiser, aiSubmarine, aiDestroyer)
@@ -124,15 +184,15 @@ function randomlyPlaceAiShips () {
     if (typeof aiChosen === 'undefined') {
         aiChosen = []
     }
-    let randomChoice = Math.floor(Math.random() * ai.gameboard.board.length)
     for (let i = 0; i < 5; i++) {
-        if (!(aiChosen.includes(randomChoice)) && randomChoice + aiAvailableShips[i].length <= 99 && ai.gameboard.board[randomChoice].hasShip === false) {
+        let randomChoice = Math.floor(Math.random() * ai.gameboard.board.length)
+        const shipPlacement = ai.gameboard.board.slice(randomChoice, randomChoice + aiAvailableShips[i].length)
+        if (!(aiChosen.includes(randomChoice)) && randomChoice + aiAvailableShips[i].length < ai.gameboard.board.length && ai.gameboard.board[randomChoice].hasShip === false && ai.gameboard.board[randomChoice + aiAvailableShips[i].length].hasShip === false) {
             aiChosen.push(randomChoice)
-            ai.gameboard.placeShip(aiAvailableShips[i], aiChosen[i])
         } else {
-            while (aiChosen.includes(randomChoice) || randomChoice + aiAvailableShips[i].length > 99 || ai.gameboard.board[randomChoice].hasShip === true) {
+            while (aiChosen.includes(randomChoice) || randomChoice + aiAvailableShips[i].length >= ai.gameboard.board.length || shipPlacement.some(x => x.hasShip === true) || ai.gameboard.board[randomChoice].hasShip === true || ai.gameboard.board[randomChoice + aiAvailableShips[i].length].hasShip === true) {
                 randomChoice = Math.floor(Math.random() * ai.gameboard.board.length)
-                if (!(aiChosen.includes(randomChoice)) && !(randomChoice + aiAvailableShips[i].length > 99)) {
+                if (!(aiChosen.includes(randomChoice)) && randomChoice + aiAvailableShips[i].length < ai.gameboard.board.length && ai.gameboard.board[randomChoice].hasShip === false && ai.gameboard.board[randomChoice + aiAvailableShips[i].length].hasShip === false) {
                     aiChosen.push(randomChoice)
                     break
                 }
@@ -142,9 +202,29 @@ function randomlyPlaceAiShips () {
     }
 }
 
+function removeShips () {
+    for (const cell of ai.gameboard.board) {
+        if (cell.hasOwnProperty('ship')) {
+            delete cell.ship
+            cell.hasShip = false
+        }
+    }
+}
+
+function replaceShips () {
+    while (checkForShip() === false) {
+        removeShips()
+        randomlyPlaceAiShips()
+        if (checkForShip() !== false) {
+            break
+        }
+    }
+}
+
 const gameLogic = (() => {
     placeShips()
     randomlyPlaceAiShips()
+    replaceShips()
     attackLogic()
-    displayShips(ai.gameboard.board, aiCellArr)
+    // displayShips(ai.gameboard.board, aiCellArr)
 })()
