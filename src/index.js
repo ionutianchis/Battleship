@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-undef */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable no-unused-vars */
@@ -235,3 +236,8 @@ const gameLogic = (() => {
     replaceShips()
     attackLogic()
 })()
+
+const git_btn = document.getElementById('git_btn')
+git_btn.addEventListener('click', () => {
+    window.open('https://github.com/Jonthejon10')
+})
