@@ -3,7 +3,7 @@
 
 This is where I first started working with tests through jest
 
-<a href="https://jonthejon10.github.io/Battleship/">Live preview</a>
+<a href="https://ionutianchis.github.io/Battleship/">Live preview</a>
 
 <img src='dist/images/project-preview1.png' alt=''>
 
